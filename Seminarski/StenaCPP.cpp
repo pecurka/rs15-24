@@ -47,6 +47,7 @@ void AStenaCPP::BeginPlay()
 void AStenaCPP::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	SetLifeSpan(30.f);
 
 }
 
