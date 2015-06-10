@@ -40,7 +40,7 @@ APijanista::APijanista()
 
 
 
-
+	
 	/*Stvari koji se imenom ocigledne nece biti komentarisane*/
 	this->SetActorRelativeScale3D(FVector(0.4, 0.4, 0.4));
 
@@ -53,6 +53,8 @@ void APijanista::BeginPlay()
 	
 	APijanista::SpringArmLeft = false;
 	APijanista::SpringArmRight = false;
+
+	/*Ispravkja*/
 	APijanista::RightVector = GetActorRightVector();
 
 	APijanista::ForwardVector = GetActorForwardVector();
