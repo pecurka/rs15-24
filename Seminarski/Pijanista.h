@@ -23,7 +23,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 
-	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FCharacterMovementUpdatedSignature, float, DeltaSeconds, FVector, OldLocation, FVector, OldVelocity);
+	//Kameru su izlozili blueprintu i kasnije cemo je vizualno podesiti kako nam bude odgovarlo, malo iznad glumca
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		UCameraComponent *FollowCamera;
 
@@ -35,8 +35,6 @@ public:
 	UFUNCTION()
 		virtual void MoveRight(float Value);
 	UFUNCTION()
-		virtual void Jump1(float value);
-	UFUNCTION()
 		virtual void OnStartJump();
 	UFUNCTION()
 		virtual void OnStopJump();
@@ -44,17 +42,12 @@ public:
 		virtual void OnBeginOverlap(AActor * Other);
 	USpringArmComponent *Cam;
 
-	/*Ovo nije meta-programiranje ali ce to mozda postati*/
-	/**************************************************
-	***************************************************
-	***************************************************/
-	//Ovo ce biti banovano iz sledecih izdanja, izgleda gadno kao Slajd
-	UAnimMontage* ttt;
 
-	//Hhahah malo loseg programiranja,steta sto nemamo podrsku za B prolog ili ne bi morali da radimo rekurziju
+
+	//Koristi se da odredi da li smo na skretanju
 	bool SpringArmLeft;
 	bool SpringArmRight;
-	/*E ovo je kul*/
+	/*Smer kretanja Pijaniste*/
 	FVector RightVector;
 	FVector ForwardVector;
 };

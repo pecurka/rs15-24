@@ -4,17 +4,17 @@
 #include "Ekran.h"
 
 
+/*GameMode ce instanirati HUD kada igra pocne, zato ovo mora da bude static*/
 int AEkran::NumberOfCoins = 0;
 void AEkran::DrawHUD(void)
 {
 	
-	//AHUD::DrawText(const FString& Text, FVector2D Position, UFont* TextFont, FVector2D FontScale, FColor TextColor)
-	//FObjectInitializer aaa();
+
 	UFont *font=AHUD::GetFontFromSizeIndex(10);
 
 	FString tekst = "Sakupljeno:  ";
 	tekst = tekst + FString::FromInt(NumberOfCoins);
-	//DrawText(TEXT("Sakupljeno"),FLinearColor::Red,0,0,font,1,true);
+	
 	
 	DrawText(tekst, FLinearColor::Red,20, 0, font, 5, true);
 }

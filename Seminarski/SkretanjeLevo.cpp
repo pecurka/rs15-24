@@ -12,14 +12,7 @@ ASkretanjeLevo::ASkretanjeLevo()
 	LeviZid->SetRelativeLocation(FVector(0, 400, 200));
 	Nadovezivanje->SetRelativeLocation(FVector(0,0,0));
 	Nadovezivanje->SetRelativeRotation(FRotator(0,90,0));
-	//isSpawnSkretanjeLevo = true;
-	//isSpawnSkretanjeDesno = false;
-}
-/*
-void ASkretanjeLevo::OnConstruction(const FTransform & Transform)
-{
-	
 	
 }
-*/
+
 

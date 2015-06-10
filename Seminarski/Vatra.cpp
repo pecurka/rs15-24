@@ -12,7 +12,6 @@ AVatra::AVatra()
 	UParticleSystemComponent * Koren = CreateDefaultSubobject<UParticleSystemComponent, UParticleSystemComponent>("FC Barselona");
 	RootComponent = Koren;
 	static ConstructorHelpers::FObjectFinder<UParticleSystem> Vatra_Particles(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Fire.P_Fire'"));
-	//Koren->Set
 	Koren->SetTemplate(Vatra_Particles.Object);
 }
 

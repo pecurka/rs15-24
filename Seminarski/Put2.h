@@ -13,43 +13,45 @@ class SEMINARSKI_API APut2 : public AActor
 
 {
 	GENERATED_BODY()
-	
+
 public:
-	static int sve;
 	static bool isEnableSpawnInfinityRoad;
-	/*Join the party   -:)*/
+	/**/
 	static int SpawnPointNumber;
-	/*Lokacija nadovezivanja, verovatno moramo ovako zbog skretanja*/
+	/*Delimo transform sa svim klasama*/
 	static FVector LokacijaNadovezivanje;
 	static FRotator RotacijaNadovezivanje;
-	static bool PrviPut;
+	/*Onemogucavamo duplo skretanje u istu straanu*/
 	static bool isSpawnSkretanjeLevo;
 	static bool isSpawnSkretanjeDesno;
 	static FVector DeltaLocation;
-	AKrofna_CPP *Krofna;
-	UPROPERTY(Category = "StaticMeshCom", BlueprintReadWrite, EditAnywhere, Meta = (AlowPrivateAccess="true"))
-		UStaticMeshComponent* Pod;
-		
-	
 
-	UPROPERTY(Category = "StaticMeshCom", BlueprintReadWrite, EditAnywhere, SimpleDisplay ,
+	/*Ovako izlazemo nase Komponente BP, Ovu klasu je kompletno uradjena u C++, ali kad bi iz nje izveli BP, onda bi mogli vizualno da editujemo svojstva
+	a logika bi nam ostala u C++*/
+	/*Kategorija sluzi BP, prilicno je ocigledno onom ko zna nesto iz BP*/
+	UPROPERTY(Category = "StaticMeshCom", BlueprintReadWrite, EditAnywhere, Meta = (AlowPrivateAccess = "true"))
+		UStaticMeshComponent* Pod;
+
+
+
+	UPROPERTY(Category = "StaticMeshCom", BlueprintReadWrite, EditAnywhere, SimpleDisplay,
 		Meta = (AlowPrivateAccess = "true"))
 		UStaticMeshComponent* LeviZid;
-	
+
 	UPROPERTY(Category = "StaticMeshCom", BlueprintReadWrite, EditAnywhere, SimpleDisplay,
 		Meta = (AlowPrivateAccess = "true"))
 		UStaticMeshComponent* DesniZid;
 
 
-	
+
 	UPROPERTY(Category = "Kolizija", BlueprintReadWrite, EditAnywhere, SimpleDisplay,
 		Meta = (AlowPrivateAccess = "true"))
 		UBoxComponent * Kolizija;
-	
+
 	UPROPERTY(Category = "Kolizija", BlueprintReadWrite, EditAnywhere, SimpleDisplay,
 		Meta = (AlowPrivateAccess = "true"))
 		UBoxComponent * ProstorZaKrofne;
-	
+
 	UPROPERTY(Category = "Nad", BlueprintReadWrite, EditAnywhere, SimpleDisplay,
 		Meta = (AlowPrivateAccess = "true"))
 		UArrowComponent * Nadovezivanje;
@@ -57,30 +59,31 @@ public:
 		Meta = (AlowPrivateAccess = "true"))
 		bool OmogucenoSkretanjeLevo;
 
-	//UFUNCTION(BlueprintCallable, Category = "Funkcija")
-		//FString odrediSledeceSkretanje();
-	// Sets default values for this actor's properties
-	
+	UPROPERTY(Category = "Nesto", BlueprintReadWrite, EditAnywhere, SimpleDisplay,
+		Meta = (AlowPrivateAccess = "true"))
+		UBlueprint * Vatra;
+
+
 	APut2();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
+	virtual void Tick(float DeltaSeconds) override;
 
 	//Called when constructior finsih
 	virtual void OnConstruction(const FTransform &Transform) override;
 
-	//FActorBeginOverlapSignature OnActorBeginOverlap;
+	/*Ove metode nisu morale da budu virutalne*/
 	UFUNCTION()
-	virtual void OnBeginOverlap(AActor* OtherActor);
+		virtual void OnBeginOverlap(AActor* OtherActor);
 	UFUNCTION()
-	virtual void OnEndOverlap(AActor* OtherActor);
+		virtual void OnEndOverlap(AActor* OtherActor);
 	virtual void HelperDestroy();
-	//UFUNCTION()
-	//void OnOverlap(class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	
-	
-	//FCharacterBeginOverlapSignature Zovi();
+
+	/*Use to restart static vars in the APut2 */
+	UFUNCTION(BlueprintCallable, Category = "APut2")
+		static void Restart();
 };

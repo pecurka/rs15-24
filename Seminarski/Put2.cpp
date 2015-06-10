@@ -7,14 +7,22 @@
 #include "SkretanjeDesno.h"
 #include "Krofna_CPP.h"
 #include "StenaCPP.h"
+
+/*Ove var su static jer ih delimo sa SkretanjeDesno i Skretanje Levo*/
+
+
+/*Da li spanujemo 30 jedinica puta*/
 bool APut2::isEnableSpawnInfinityRoad = true;
+
+/*Brojimo broj kreiranih jednica puta*/
 int APut2::SpawnPointNumber = 0;
+/*Cuvaju Transform sledece jedince puta*/
 FVector APut2::LokacijaNadovezivanje = FVector(0, 400, 0);
 FRotator APut2::RotacijaNadovezivanje = FRotator(0, 0, 0);
-FVector APut2::DeltaLocation = FVector(0, 00, 0);
+/*Koristi se da spreci skretanje u istu stranu
+Posto vucemo 30 jedinca puta, skretanje 2x levo ili 2x desno ce dovesti do preklapanja puta, a to ne zelimo*/
 bool APut2::isSpawnSkretanjeLevo = false;
 bool APut2::isSpawnSkretanjeDesno = false;
-bool APut2::PrviPut = true;
 // Sets default values
 APut2::APut2()
 {
@@ -22,24 +30,27 @@ APut2::APut2()
 	PrimaryActorTick.bCanEverTick = true;
 
 
-	Pod = CreateDefaultSubobject<UStaticMeshComponent, UStaticMeshComponent>(TEXT("Ovo je koren"));
+	/*Kreiranje PodObjekata, oni se drze u nizu ovog Glumca,kad je Glumac unisten i svi njegovi podObjekti su unisteni*/
+	/*Generisu Glumcevo ponasanje, tipa oblik, kretanje.....*/
+	Pod = CreateDefaultSubobject<UStaticMeshComponent, UStaticMeshComponent>(TEXT("Koren"));
 	RootComponent = Pod;
-	LeviZid = CreateDefaultSubobject<UStaticMeshComponent, UStaticMeshComponent>(TEXT("koji kurac"));
-	DesniZid = CreateDefaultSubobject<UStaticMeshComponent, UStaticMeshComponent>(TEXT("nije nego"));
-	Kolizija = CreateDefaultSubobject<UBoxComponent, UBoxComponent>(TEXT(" kolizija"));
-	ProstorZaKrofne = CreateDefaultSubobject<UBoxComponent, UBoxComponent>(TEXT("prostor za krofne"));
-	Nadovezivanje = CreateDefaultSubobject<UArrowComponent, UArrowComponent>(TEXT("nadovezivanje"));
+	LeviZid = CreateDefaultSubobject<UStaticMeshComponent, UStaticMeshComponent>(TEXT("LeviZid"));
+	DesniZid = CreateDefaultSubobject<UStaticMeshComponent, UStaticMeshComponent>(TEXT("DesniZid"));
+	Kolizija = CreateDefaultSubobject<UBoxComponent, UBoxComponent>(TEXT("Kolizija"));
+	ProstorZaKrofne = CreateDefaultSubobject<UBoxComponent, UBoxComponent>(TEXT("Prostor za krofne"));
+	Nadovezivanje = CreateDefaultSubobject<UArrowComponent, UArrowComponent>(TEXT("Nadovezivanje"));
 
+
+	/*Pravimo Hijerarhiju*/
 	Nadovezivanje->AttachTo(RootComponent);
 	LeviZid->AttachTo(RootComponent);
 	DesniZid->AttachTo(RootComponent);
 	Kolizija->AttachTo(RootComponent);
 	ProstorZaKrofne->AttachTo(RootComponent);
-	//tv->AttachTo(RootComponent);
-
-	//Pod->SetStaticMesh(UStaticMesh())
+	
 
 
+	/*Konstruktor Helperi za dovlacnej BP*/
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> PodSM(TEXT("StaticMesh'/Game/StarterContent/Architecture/Floor_400x400.Floor_400x400'"));
 	Pod->SetStaticMesh(PodSM.Object);
 	static ConstructorHelpers::FObjectFinder<UMaterial> PodM(TEXT("Material'/Game/StarterContent/Materials/M_CobbleStone_Rough.M_CobbleStone_Rough'"));
@@ -76,26 +87,7 @@ APut2::APut2()
 	OnActorBeginOverlap.AddDynamic(this, &APut2::OnBeginOverlap);
 	OnActorEndOverlap.AddDynamic(this, &APut2::OnEndOverlap);
 	Krofna = nullptr;
-	//static ConstructorHelpers::FClassFinder<UBlueprint> kojikurac(TEXT("Blueprint'/Game/Blueprints/Milos1.Milos1'"));
-	//FVector vvv=FMath::RandPointInBox(Cast<Box,UBoxComponent>*ProstorZaKrofne);
-	//FVector vvv(FMath::RandRange(0, ProstorZaKrofne->GetUnscaledBoxExtent().X), FMath::RandRange(0, ProstorZaKrofne->GetUnscaledBoxExtent().Y)
-	//, FMath::RandRange(0, ProstorZaKrofne->GetUnscaledBoxExtent().Z));
-
-	//AActorBaseClass* NewActor = UFunctionLibrary::SpawnBP<AActorBaseClass>(GetWorld(), TheActorBluePrint, SpawnLoc, SpawnRot);
-	//UClass *ada = kojikurac.Class.operator UClass *();
-	//FRotator RotacijaProstoraZaKrofne = ProstorZaKrofne->GetComponentRotation();
-	//FVector vada(3, 3, 3);
-	//GetWorld()->SpawnActor(AKrofna_CPP::StaticClass(), &vada, &RotacijaProstoraZaKrofne );
-
-	//LokacijaNadovezivanje =this->Nadovezivanje->GetComponentLocation();
-	//RotacijaNadovezivanje =this->Nadovezivanje->GetComponentRotation();
-	/*Get world location of first Put2 spawn*/
-	if (PrviPut)
-	{
-		PrviPut = false;
-		//LokacijaNadovezivanje = Nadovezivanje->GetComponentLocation()+FVector(0,400,0);
-		//RotacijaNadovezivanje = Nadovezivanje->GetComponentRotation();
-	}
+	
 	static ConstructorHelpers::FObjectFinder<UBlueprint> Vatra(TEXT("Blueprint'/Game/StarterContent/Blueprints/Blueprint_Effect_Fire.Blueprint_Effect_Fire'"));
 }
 
@@ -123,25 +115,22 @@ void APut2::OnBeginOverlap(AActor * Other)
 	/* if is spawn Turn left, next turn sholud be right or forward */
 	if (isSpawnSkretanjeLevo && (ChooseNextTurn == 0))
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "If sa skretanjem levo");
+		
 		ChooseNextTurn = 1;
-		//isSpawnSkretanjeLevo = false;
-		//isSpawnSkretanjeDesno = true;
+		
 	}
 	else if (isSpawnSkretanjeDesno && (ChooseNextTurn == 1))
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "IF sa skretanjem desno");
+		
 		ChooseNextTurn = 0;
-		//isSpawnSkretanjeDesno = false;
-		//isSpawnSkretanjeLevo = true;
-		//isSpawnSkretanjeDesno = ;
+		
 	}
 
 
 	if (Cast<ACharacter, AActor>(Other) && (ChooseNextTurn >= 2))
 	{
 
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "Skretanje Pravo");
+		
 		APut2* tmp = Cast<APut2, AActor>(GetWorld()->SpawnActor(APut2::StaticClass(), &LokacijaNadovezivanje, &RotacijaNadovezivanje));
 
 	}
@@ -149,7 +138,7 @@ void APut2::OnBeginOverlap(AActor * Other)
 	if (Cast<ACharacter, AActor>(Other) && (ChooseNextTurn == 0))
 	{
 
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "Skretanje levo");
+		
 		ASkretanjeLevo* tmp = Cast<ASkretanjeLevo, AActor>(GetWorld()->SpawnActor(ASkretanjeLevo::StaticClass(), &LokacijaNadovezivanje, &RotacijaNadovezivanje));
 		isSpawnSkretanjeLevo = true;
 		isSpawnSkretanjeDesno = false;
@@ -157,7 +146,7 @@ void APut2::OnBeginOverlap(AActor * Other)
 	if (Cast<ACharacter, AActor>(Other) && (ChooseNextTurn == 1))
 	{
 
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "Skretanje desno");
+		
 		ASkretanjeDesno* tmp = Cast<ASkretanjeDesno, AActor>(GetWorld()->SpawnActor(ASkretanjeDesno::StaticClass(), &LokacijaNadovezivanje, &RotacijaNadovezivanje));
 		isSpawnSkretanjeDesno = true;
 
@@ -170,59 +159,55 @@ void APut2::OnEndOverlap(AActor * Other)
 {
 	if (Cast<ACharacter, AActor>(Other))
 	{
+		/*Ovaj metod je banovan iz sledecih izdanja ali je najlaksi*/
+		/*Vezemo tajmer za nas objekat, metod koji se poziva mora imati odredjeni potpis pa otuda i naziv HelperDestroy */
 		GetWorldTimerManager().SetTimer(this, &APut2::HelperDestroy, 10, true);
 	}
 }
-int APut2::sve = 0;
-void OnActorBeginOverlap(AActor* Other)
-{
-	int i = 0;
-	while (i < 5)
-	{
-		i++;
-		//GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Blue, "ASDASDAS");
-	}
-}
+
+
 void APut2::HelperDestroy()
 {
-	//Krofna->Destroy();
+	
 	this->Destroy();
 }
 void APut2::OnConstruction(const FTransform& Transforom)
 {
+	/**********************************
+	Stvori 30 puteva kad igra pocne
+	********************************/
 
-	//GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Blue, "Konstrukcija je ok");
-	//FVector Lokacija = Nadovezivanje->GetComponentLocation();
-	//FRotator Rotacija = this->Nadovezivanje->GetComponentRotation();
+	/*Update parametre stvranja sledece jedinice puta*/
 	LokacijaNadovezivanje = this->Nadovezivanje->GetComponentLocation();
 	RotacijaNadovezivanje = this->Nadovezivanje->GetComponentRotation();
 	SpawnPointNumber++;
 	if (isEnableSpawnInfinityRoad)
 	{
-		/*Possibly constructor can get wild*/
-
+		/*Possibly the constructor can get wild*/
+		/*Ovde se dogadja rekurzija, ne direktna ali "indirektna", OnConstruction se poziva kad se Glumac stvori*/
 		isEnableSpawnInfinityRoad = false;
 		for (int i = 0; i < 30; i++)
 		{
 
-
-
 			GetWorld()->SpawnActor(APut2::StaticClass(), &LokacijaNadovezivanje, &RotacijaNadovezivanje);
-
 
 		}
 	}
 
+
+
+	/*Stvaranje krovne na random poziciju*/
 	FVector RelativnaLokacijaKrofne(FMath::RandRange(-ProstorZaKrofne->GetUnscaledBoxExtent().X, ProstorZaKrofne->GetUnscaledBoxExtent().X), FMath::RandRange(-ProstorZaKrofne->GetUnscaledBoxExtent().Y, ProstorZaKrofne->GetUnscaledBoxExtent().Y)
 		, FMath::RandRange(-ProstorZaKrofne->GetUnscaledBoxExtent().Z, ProstorZaKrofne->GetUnscaledBoxExtent().Z));
 
 	RelativnaLokacijaKrofne = RelativnaLokacijaKrofne + ProstorZaKrofne->GetComponentLocation();
-	//AActorBaseClass* NewActor = UFunctionLibrary::SpawnBP<AActorBaseClass>(GetWorld(), TheActorBluePrint, SpawnLoc, SpawnRot);
-	//UClass *ada = kojikurac.Class.operator UClass *();
+	
 	FRotator RotacijaProstoraZaKrofne = ProstorZaKrofne->GetComponentRotation();
-	//FVector vada(3, 3, 3);
+	
 	Krofna = Cast<AKrofna_CPP, AActor>(GetWorld()->SpawnActor(AKrofna_CPP::StaticClass(), &RelativnaLokacijaKrofne, &RotacijaProstoraZaKrofne));
 
+
+	/*Stvramo Stenu svakih 10 jedinica puta*/
 	if ((SpawnPointNumber % 10) == 0)
 	{
 		FVector RelativnaLokacijaStene(FMath::RandRange(-ProstorZaKrofne->GetUnscaledBoxExtent().X, ProstorZaKrofne->GetUnscaledBoxExtent().X), FMath::RandRange(-ProstorZaKrofne->GetUnscaledBoxExtent().Y, ProstorZaKrofne->GetUnscaledBoxExtent().Y)
@@ -231,4 +216,15 @@ void APut2::OnConstruction(const FTransform& Transforom)
 		GetWorld()->SpawnActor(AStenaCPP::StaticClass(), &RelativnaLokacijaStene, &RotacijaProstoraZaKrofne);
 	}
 
+}
+/*Ova funcnkija je pozivna iz BP, koristi se da restartujemo igru*/
+void APut2::Restart()
+{
+	APut2::isEnableSpawnInfinityRoad = true;
+	APut2::LokacijaNadovezivanje = FVector(0, 0, 0);
+	APut2::RotacijaNadovezivanje = FRotator(0, 0, 0);
+	APut2::isSpawnSkretanjeLevo = false;
+	APut2::isSpawnSkretanjeDesno = false;
+	APut2::PrviPut = true;
+	AEkran::NumberOfCoins = 0;
 }

@@ -11,9 +11,6 @@ ASkretanjeDesno::ASkretanjeDesno()
 	DesniZid->SetRelativeLocation(FVector(0, 400, 200));
 	Nadovezivanje->SetRelativeLocation(FVector(400,400, 0));
 	Nadovezivanje->SetRelativeRotation(FRotator(0, -90, 0));
-	//isSpawnSkretanjeDesno = true;
-	/*turn left is enable*/
-	//isSpawnSkretanjeLevo = false;
 }
 
 
