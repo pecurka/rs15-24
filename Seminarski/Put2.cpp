@@ -24,6 +24,8 @@ Posto vucemo 30 jedinca puta, skretanje 2x levo ili 2x desno ce dovesti do prekl
 bool APut2::isSpawnSkretanjeLevo = false;
 bool APut2::isSpawnSkretanjeDesno = false;
 // Sets default values
+/*Ima druga verzija konstruktora Klasa(FObjectInitilazier) za koju ima tutorijala po netu, ali posto sam malo glup, i nisam pogledao AActor.cpp lepo, gde jasno pise sve, ovaj konstrukor je uzeo znajacno vreme, 
+btw spawn blueprint iz c++ je uspeo*/
 APut2::APut2()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -50,7 +52,7 @@ APut2::APut2()
 	
 
 
-	/*Konstruktor Helperi za dovlacnej BP*/
+	/*Konstruktor Helperi za dovlacnej BP, ovde ima malo visaka, posto sam dovlacio isti materijal vise puta, treba lepo razmeti ovaj static, valjda samo jedan put kreirana promenjiva ali joj je doseg samo konstruktor*/
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> PodSM(TEXT("StaticMesh'/Game/StarterContent/Architecture/Floor_400x400.Floor_400x400'"));
 	Pod->SetStaticMesh(PodSM.Object);
 	static ConstructorHelpers::FObjectFinder<UMaterial> PodM(TEXT("Material'/Game/StarterContent/Materials/M_CobbleStone_Rough.M_CobbleStone_Rough'"));
