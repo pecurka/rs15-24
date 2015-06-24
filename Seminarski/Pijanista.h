@@ -41,7 +41,15 @@ public:
 	UFUNCTION()
 		virtual void OnBeginOverlap(AActor * Other);
 	USpringArmComponent *Cam;
+	/*Koristimo da skrenemo desno, pogledaj cpp*/
+	UFUNCTION()
+		virtual void SkreniDesno();
+	/*Koristomo da skrenemo levo, pogledaj cpp */
+	UFUNCTION()
+		virtual void SkreniLevo();
 
+	/*Koristimo da pozovemo tajmer tacno 20 puta, 4.5*20 = 90, naravno mogli smo i velicnu koraka eksplicitno da zadamo*/
+	static int Pomoc;
 
 
 	//Koristi se da odredi da li smo na skretanju

@@ -5,8 +5,8 @@
 #include "GameFramework/Actor.h"
 #include "Krofna_CPP.h"
 #include "Put2.generated.h"
+#include "PreprekaCPP.h"
 
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterBeginOverlapSignature, class ACharacter*, OtherActor);
 
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
 class SEMINARSKI_API APut2 : public AActor
@@ -86,4 +86,8 @@ public:
 	/*Use to restart static vars in the APut2 */
 	UFUNCTION(BlueprintCallable, Category = "APut2")
 		static void Restart();
+
+private:
+	/*Ovo nam sluzi za smestimo dovuceni BP, koji je izvedena klasa PreprekaCPP, sto tacno i pise u deklaraciju*/
+	TSubclassOf<APreprekaCPP> Prepreka;
 };

@@ -6,6 +6,7 @@
 #include "SkretanjeLevo.h"
 #include "SkretanjeDesno.h"
 // Sets default values
+int APijanista::Pomoc = 0;
 APijanista::APijanista()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -110,24 +111,20 @@ void APijanista::MoveRight(float V)
 		}
 		else if (APijanista::SpringArmLeft && V>0)
 		{
-			
-			Mesh->SetWorldRotation(Mesh->GetComponentRotation() + FRotator(0, 90, 0));
-			Cam->SetWorldRotation(Cam->GetComponentRotation() + FRotator(0, 90, 0));
 			APijanista::SpringArmLeft = false;
-		
-			ForwardVector = ForwardVector.RotateAngleAxis(90, FVector(0, 0, 1));
-			RightVector = RightVector.RotateAngleAxis(90, FVector(0, 0, 1));
-			
+			Pomoc = 1;
+			/*Pozivamo tajmer svakih 0.01s, ovo true na kraju metoda upravo to i znaci,
+			tj. funkcija se jednom pozove, pa kad se vrati ona se opet pozve posle 0.01f, znaci beskonacno puta se poziva na svakih 0.01s, 
+			dok neuklonimo tajmer*/
+			GetWorldTimerManager().SetTimer(this, &APijanista::SkreniDesno, 0.01f, true);
 		}
 		else if (APijanista::SpringArmRight && V<0)
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "else if (APijanista::SpringArmRight");
-			Mesh->SetWorldRotation(Mesh->GetComponentRotation() + FRotator(0, -90, 0));
-			Cam->SetWorldRotation(Cam->GetComponentRotation() + FRotator(0, -90, 0));
 			APijanista::SpringArmRight = false;
-			
-			ForwardVector = ForwardVector.RotateAngleAxis(-90, FVector(0, 0, 1));
-			RightVector = RightVector.RotateAngleAxis(-90, FVector(0, 0, 1));
+	
+			Pomoc = 1;
+			GetWorldTimerManager().SetTimer(this, &APijanista::SkreniLevo, 0.01f, true);
+
 			
 		}
 	}
@@ -161,5 +158,44 @@ void APijanista::OnBeginOverlap(AActor *Other)
 			APijanista::SpringArmRight = true;
 			
 		}
-	
+
+	/*Radimo Destory kad udraimo u prepreku(Zvezda)*/
+	if (Cast<APreprekaCPP, AActor>(Other))
+	{
+		/*Odlozen destroy do sledeceg tika, imace vremena da izvrsi metod koji ide iza
+		Jednostavo jer Kolektor Djubreta tako radi, posto nismo nista eksplicitno zauzimali(nikakve nizove ili bilo sta slicno)
+		), mozemo da se oslonimo na Sakupljac Odpadaka*/
+		this->Destroy();
+		/*Obavesti sve da je Pijanista napustio igru*/
+		this->EndPlay(EEndPlayReason::ActorDestroyed);
+	}
+}
+
+void APijanista::SkreniDesno()
+{
+	/*Rotiracemo sve u pravom smeru, za 4.5 stepena*/
+	Mesh->SetWorldRotation(Mesh->GetComponentRotation() + FRotator(0, 4.5, 0));
+	Cam->SetWorldRotation(Cam->GetComponentRotation() + FRotator(0, 4.5, 0));
+	ForwardVector = ForwardVector.RotateAngleAxis(4.5, FVector(0, 0, 1));
+	RightVector = RightVector.RotateAngleAxis(4.5, FVector(0, 0, 1));
+	if (Pomoc++ >= 20)
+	{
+		/*kada je tajmer pozvan tacno 20 puta, onda ga uklonimo metodom ispod*/
+		GetWorldTimerManager().ClearTimer(this, &APijanista::SkreniDesno);
+		/*resetujemo brojac tajmeraS*/
+		Pomoc = 0;
+	}
+}
+/*Isto kao i skreni Desno*/
+void APijanista::SkreniLevo()
+{
+	Mesh->SetWorldRotation(Mesh->GetComponentRotation() + FRotator(0, -4.5, 0));
+	Cam->SetWorldRotation(Cam->GetComponentRotation() + FRotator(0, -4.5, 0));
+	ForwardVector = ForwardVector.RotateAngleAxis(-4.5, FVector(0, 0, 1));
+	RightVector = RightVector.RotateAngleAxis(-4.5, FVector(0, 0, 1));
+	if (Pomoc++ >= 20)
+	{
+		GetWorldTimerManager().ClearTimer(this, &APijanista::SkreniLevo);
+		Pomoc = 0;
+	}
 }

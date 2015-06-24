@@ -7,7 +7,7 @@
 #include "SkretanjeDesno.h"
 #include "Krofna_CPP.h"
 #include "StenaCPP.h"
-
+#include "PreprekaCPP.h"
 /*Ove var su static jer ih delimo sa SkretanjeDesno i Skretanje Levo*/
 
 
@@ -91,6 +91,11 @@ APut2::APut2()
 	Krofna = nullptr;
 	
 	static ConstructorHelpers::FObjectFinder<UBlueprint> Vatra(TEXT("Blueprint'/Game/StarterContent/Blueprints/Blueprint_Effect_Fire.Blueprint_Effect_Fire'"));
+
+	/*Dovlacimo BP koji smo kreirali iz PreprekaCPP, znaci napravili smo logiku u CPP a onda smo iz njega izveli BP i dodizajnirali ga vizualno,
+	a sada dovlacimo taj BP i spanujemo ga*/
+	static ConstructorHelpers::FObjectFinder<UBlueprint> PreprekaTMP(TEXT("Blueprint'/Game/Blueprints/PreprekaBP.PreprekaBP'"));
+	Prepreka = (UClass*)(PreprekaTMP.Object->GeneratedClass);
 }
 
 // Called when the game starts or when spawned
@@ -216,6 +221,17 @@ void APut2::OnConstruction(const FTransform& Transforom)
 			, FMath::RandRange(-ProstorZaKrofne->GetUnscaledBoxExtent().Z, ProstorZaKrofne->GetUnscaledBoxExtent().Z));
 		RelativnaLokacijaStene += ProstorZaKrofne->GetComponentLocation();
 		GetWorld()->SpawnActor(AStenaCPP::StaticClass(), &RelativnaLokacijaStene, &RotacijaProstoraZaKrofne);
+	}
+
+	/*Stvramo Prepreku(Zvezdu) svakih 15 jedinica puta na radnom lokaciju*/
+	if ((SpawnPointNumber % 15) == 0)
+	{
+		//SRadnInit incijalizujemo seme za nas rand, nije sigurno sta ovo tacno radi
+		FMath::SRandInit(100);
+		FVector RelativnaLokacijaPrepreka(FMath::RandRange(-ProstorZaKrofne->GetUnscaledBoxExtent().X, ProstorZaKrofne->GetUnscaledBoxExtent().X), FMath::RandRange(-ProstorZaKrofne->GetUnscaledBoxExtent().Y, ProstorZaKrofne->GetUnscaledBoxExtent().Y)
+			, FMath::RandRange(-ProstorZaKrofne->GetUnscaledBoxExtent().Z, ProstorZaKrofne->GetUnscaledBoxExtent().Z));
+		RelativnaLokacijaPrepreka += ProstorZaKrofne->GetComponentLocation();
+		GetWorld()->SpawnActor<APreprekaCPP>(Prepreka, RelativnaLokacijaPrepreka, RotacijaProstoraZaKrofne);
 	}
 
 }
